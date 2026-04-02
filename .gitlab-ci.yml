@@ -1,0 +1,12 @@
+include:
+  - project: libs/ci/global
+    file:
+      - build-image-multiarch.yml
+      - security.yml
+      - helm.yml
+    ref: master
+
+variables:
+  DOCKER_CI_COMMIT_TAG_PATTERN: /^\d+\.\d+\.\d+$/
+  HELM_CI_COMMIT_TAG_PATTERN: /^helm-\d+\.\d+\.\d+$/
+  HELM_CHART_PATH: deploy/helm

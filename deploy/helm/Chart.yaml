@@ -1,0 +1,12 @@
+apiVersion: v2
+name: mcp-oauth2-proxy
+version: 0.0.0-managed-by-ci
+appVersion: 1.*.*
+type: application
+kubeVersion: '>= 1.24.0-0'
+description: A Helm chart for mcp-oauth2-proxy - HTTP reverse proxy for MCP servers that injects OIDC access tokens
+icon: https://no.icon
+dependencies: []
+maintainers:
+  - name: Anton Panov
+    email: anton.panov@risedphantom.com

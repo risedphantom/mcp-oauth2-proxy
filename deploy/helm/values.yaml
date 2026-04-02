@@ -1,0 +1,171 @@
+# -- Overrides the name of the chart
+nameOverride: ""
+
+# -- Overrides the fully qualified app name
+fullnameOverride: ""
+
+# -- Overrides the namespace name
+namespaceOverride: ""
+
+# -- Additional labels to add to all resources
+additionalLabels: {}
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+image:
+  # -- Image repository
+  repository: ghcr.io/risedphantom/mcp-oauth2-proxy
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+# -- Image pull secrets
+imagePullSecrets: []
+
+# -- Number of replicas
+replicas: 1
+
+# -- Pod annotations
+podAnnotations: {}
+
+# -- Pod security context
+podSecurityContext: {}
+
+# -- Container security context
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+
+# -- Container resources
+resources: {}
+
+# -- Pod priority class name
+priorityClassName: ""
+
+# -- Pod node selector
+nodeSelector: {}
+
+# -- Pod tolerations
+tolerations: []
+
+# -- Topology spread constraints
+topologySpreadConstraints: []
+
+# -- Pod affinity
+affinity: {}
+
+service:
+  # -- Service type
+  type: ClusterIP
+  # -- Service port
+  port: 8080
+
+# -- Environment variables from secrets/configmaps to inject into the main container
+envFrom: []
+
+# -- Extra containers to add to the pod (e.g. MCP server sidecar)
+# Each entry is a full container spec.
+# Example:
+#   extraContainers:
+#     - name: mcp-server
+#       image: ghcr.io/example/mcp-server:latest
+#       ports:
+#         - containerPort: 3000
+#           name: mcp
+#           protocol: TCP
+#       resources:
+#         requests:
+#           cpu: 100m
+#           memory: 128Mi
+#         limits:
+#           memory: 256Mi
+extraContainers: []
+
+# -- Extra volume mounts to add to the main proxy container
+# Example:
+#   extraVolumeMounts:
+#     - name: shared-data
+#       mountPath: /data
+extraVolumeMounts: []
+
+# -- Extra volumes to add to the pod
+# Example:
+#   extraVolumes:
+#     - name: shared-data
+#       emptyDir: {}
+extraVolumes: []
+
+# -- Proxy configuration rendered into a ConfigMap and mounted at /app/config.yaml
+# Full configuration example:
+#   config:
+#     server:
+#       listenAddress: ":8080"
+#       readTimeout: "30s"
+#       writeTimeout: "0s"       # 0 = no timeout, required for SSE
+#       idleTimeout: "120s"
+#     upstream:
+#       url: "http://localhost:3000"
+#     headers:
+#       mutations:
+#         - action: set-x-forwarded
+#         - action: remove
+#           name: "X-Unwanted-Header"
+#         - action: add
+#           name: "X-Forwarded-By"
+#           value: "mcp-oauth2-proxy"
+#         - action: add
+#           name: "X-Original-Host"
+#           valueFrom:
+#             requestHeader: "Host"
+#         - action: add
+#           name: "X-Query-Token"
+#           valueFrom:
+#             queryParameter: "token"
+#         - action: add
+#           name: "X-Auth-Header"
+#           valueFrom:
+#             authorizationHeader: true
+#     auth:
+#       baseUrl: "https://mcp-proxy.example.com"
+#       authorizationServers:
+#         - "https://mcp-proxy.example.com"   # proxy itself acts as the AS facade
+#       scopesSupported: ["mcp:read", "mcp:write"]
+#       oidcScopes: ["openid", "profile", "email", "groups"]
+#       clientTtl: "24h"         # how long dynamically registered clients live
+#       sessionTtl: "10m"        # how long an in-progress auth flow can take
+#       codeTtl: "5m"            # how long an authorization code is valid
+#       issuerUrl: "https://auth.example.com/realms/myrealm"
+#       clientId: "mcp-proxy"
+#       clientSecret: "secret"
+config:
+  server:
+    listenAddress: ":8080"
+    readTimeout: "30s"
+    writeTimeout: "0s"
+    idleTimeout: "120s"
+  upstream:
+    url: "http://localhost:3000"
+  headers:
+    mutations:
+      - action: add
+        name: "X-Forwarded-By"
+        value: "mcp-oauth2-proxy"
+  auth:
+    baseUrl: "https://mcp-proxy.example.com"
+    authorizationServers:
+      - "https://mcp-proxy.example.com"
+    scopesSupported: ["mcp:read", "mcp:write"]
+    issuerUrl: "https://auth.example.com/realms/myrealm"
+    clientId: "mcp-proxy"
+    clientSecret: "secret"

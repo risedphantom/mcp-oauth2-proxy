@@ -1,0 +1,48 @@
+server:
+  listenAddress: ":8080"
+  readTimeout: "30s"
+  writeTimeout: "0s"       # 0 = no timeout, required for SSE
+  idleTimeout: "120s"
+
+upstream:
+  url: http://localhost:3000
+
+headers:
+  mutations:
+    - action: set-x-forwarded
+    - action: remove
+      name: X-Unwanted-Header
+    - action: add
+      name: X-Forwarded-By
+      value: mcp-oauth2-proxy
+    - action: add
+      name: X-Original-Host
+      valueFrom:
+        requestHeader: Host
+    - action: add
+      name: X-Query-Token
+      valueFrom:
+        queryParameter: token
+    - action: add
+      name: X-Auth-Header
+      valueFrom:
+        authorizationHeader: true
+
+auth:
+  baseUrl: https://mcp-proxy.example.com
+  authorizationServers:
+    - https://mcp-proxy.example.com   # proxy itself acts as the AS facade
+  scopesSupported:
+    - mcp:read
+    - mcp:write
+  oidcScopes:
+    - openid
+    - profile
+    - email
+    - groups
+  clientTtl: "24h"       # how long dynamically registered clients live
+  sessionTtl: "10m"      # how long an in-progress auth flow can take
+  codeTtl: "5m"          # how long an authorization code is valid
+  issuerUrl: https://auth.example.com/realms/myrealm
+  clientId: mcp-proxy
+  clientSecret: secret

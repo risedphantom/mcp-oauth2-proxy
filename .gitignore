@@ -1,0 +1,36 @@
+# Binaries
+mcp-oauth2-proxy
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test
+coverage.out
+coverage.html
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.omc
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+/dist/
+/bin/
+
+# Vendor (if not committed)
+# vendor/
+
+*.env
+
+# Helm
+deploy/helm/helm-debug.yaml
+
+# Local settings
+*.local.*
