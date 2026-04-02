@@ -17,7 +17,7 @@ The proxy handles the full MCP authorization lifecycle:
                          ┌──────────────────────────────────┐
                          │        mcp-oauth2-proxy          │
                          │                                  │
-MCP Client ──Bearer──►   │  AuthMiddleware (token presence) │
+MCP Client ──Bearer──►   │  AuthMiddleware (JWT validation) │
                          │  Header Mutations (add/remove)   │ ──►  Upstream MCP Server
                          │  ReverseProxy (SSE streaming)    │
                          │                                  │
@@ -40,7 +40,7 @@ MCP Client ──Bearer──►   │  AuthMiddleware (token presence) │
 7. Client exchanges the code via `POST /oauth/token` (PKCE verified) — receives Keycloak tokens
 8. Client uses the access token as `Authorization: Bearer` on subsequent proxy requests
 
-**Proxied requests** pass through AuthMiddleware (Bearer token presence check, no signature validation) and configurable header mutations before reaching the upstream server.
+**Proxied requests** pass through AuthMiddleware (Bearer JWT validation — signature and expiration) and configurable header mutations before reaching the upstream server.
 
 ## Quick Start
 

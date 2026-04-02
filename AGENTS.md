@@ -11,7 +11,7 @@ MCP Client ──► mcp-oauth2-proxy ──► Upstream MCP Server
                     │
                     ├─ OAuth2 AS facade (register, authorize, callback, token)
                     ├─ RFC 9728 / RFC 8414 metadata endpoints
-                    ├─ Auth middleware (Bearer token presence, no validation)
+                    ├─ Auth middleware (JWT validation — signature + expiration)
                     ├─ Header mutations (add/remove/set-x-forwarded/valueFrom)
                     ├─ OIDC discovery → Keycloak (authorization + token endpoints)
                     └─ SSE streaming passthrough (FlushInterval: -1, WriteTimeout: 0)
@@ -28,7 +28,7 @@ cmd/main.go                      Cobra CLI: serve, version commands
 internal/
   config/config.go               YAML config via viper, validation, defaults
   middleware/
-    auth.go                      Bearer token presence check, WWW-Authenticate challenges
+    auth.go                      JWT validation (signature + expiration), WWW-Authenticate challenges
     logging.go                   Request/response logging, body capture, skip paths
   oauth2/
     discovery.go                 OIDC .well-known/openid-configuration fetch
@@ -64,7 +64,7 @@ deploy/helm/                     Helm chart (Deployment, Service, ConfigMap, Ser
 |---|---|
 | `FlushInterval: -1`, `WriteTimeout: 0` | SSE streaming — flush every write, no timeout on long-lived connections |
 | `Rewrite` (not `Director`) | Modern httputil API with `SetURL` + `SetXForwarded` |
-| Auth middleware: presence only, no validation | Proxy checks token exists but never verifies signatures (no JWKS) |
+| Auth middleware: JWT validation with JWKS | Proxy validates token signature and expiration via JWKS from Keycloak |
 | Middleware ordering: Auth → Proxy(HeaderMutator) | Client token checked before header mutations replace it |
 | In-memory OAuth2 store with background cleanup | No external DB dependency; 60s cleanup interval; single-use codes/sessions |
 | PKCE S256 required | All authorization requests must include code_challenge with S256 method |
